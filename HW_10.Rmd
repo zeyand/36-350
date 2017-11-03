@@ -1,0 +1,85 @@
+---
+title: "Homework: Week 10"
+author: "36-350 -- Statistical Computing"
+date: "Week 10 -- Fall 2017"
+output: html_document
+---
+
+Name: Zeyan Du
+Andrew ID: zeyand
+Collaborated with: 
+
+You may turn in this homework at any time prior to Sunday, November 5<sup>th</sup> at 10:00 PM. You can collaborate with your classmates, but you must identify their names above, and you must submit **your own** lab as a knitted HTML file on the Canvas course page.
+
+Note: some of the questions below may not be answerable with just the class notes. So, as you would in real-life situations, use **R**'s help facility (via the single or double question mark) or Google or Stack Overflow or all of the above and more to research how to answer the questions. **Do not simply ask me or the TAs how to do something on Piazza!!** Do some research first.
+
+```{r echo=FALSE}
+set.seed(101)
+```
+
+<hr>
+
+*If you do not have a <tt>GitHub</tt> account, you should sign up for one before proceeding.*
+
+<hr>
+
+*If you have not installed and configured <tt>Git</tt>, you should do that before proceeding.*
+
+<hr>
+
+- 1) (15 points) Show us that you have a <tt>GitHub</tt> account. Create a repository on <tt>GitHub</tt> called "36-350". (Utilize the checklist in <tt>Notes_10A</tt>.) Then edit the code below so that we see the contents of <tt>README.md</tt>. To get the correct URL, do the following: go to your <tt>GitHub</tt> repo, click on <tt>36-350</tt> and then again on <tt>README.md</tt>, and click on the "Raw" button. Copy and paste the URL to the raw <tt>README.md</tt> file into the call to <tt>readLines()</tt> below.
+```{r}
+#readLines("Enter the URL to README.md Here")
+```
+
+- 2) (15 points) Show us that you have <tt>Git</tt> installed on your computer. Utilize the checklist in <tt>Notes_10A</tt> to create a new project within **RStudio** that is tied to your "36-350" repo on <tt>GitHub</tt>. Then follow the listed steps in <tt>Notes_10A</tt> to create a new <tt>R Script</tt> (and *not* an <tt>R Markdown</tt> file) in which you put <tt>print("Hello, world!")</tt>. Save this file (call it <tt>hello_world.R</tt>) to your local "36-350" repo. Stage the file, commit the file (and add a commit message), and push the file to <tt>GitHub</tt>. (If when you try to commit you see an error referring to an <tt>index.lock</tt> file, try to commit again...I've seen such an error when trying to commit files on my machine and it appears to be a random occurrence.) Follow the steps above to find the URL to the raw file for <tt>hello_world.R</tt> and copy and paste that URL below in the call to <tt>source_url()</tt>. If everything works, "Hello, world!" should appear.
+```{r}
+#install.packages("devtools")  # uncomment this if you need to install devtools
+library(devtools)
+#source_url("Enter the URL to hello_world.R Here")
+```
+
+<hr>
+
+In the following questions, utilize this base code by copying and pasting it into your code chunks, then adding material. (<tt>error=TRUE</tt> will cause <tt>R Markdown</tt> to keep knitting even if you throw an exception.)
+```{r,error=TRUE}
+f = function(x) { 
+  tolower(x) 
+}
+```
+
+- 3) (5 points) Add an appropriate warning, but don't change what is returned. Call the function is such a way that the warning message is observed. Was the final output from the function what you expected it to be?
+
+- 4) (5 points) Change the warning in Q3 to an error. Call the function is such a way that the error message is observed.
+
+- 5) (5 points) Keep your code from Q4, but add a message at the beginning saying what the function is supposed to do when called properly. Run the function two times, once with improper input, and a second time with proper input (e.g., "A") but in conjunction with <tt>suppressMessages()</tt>, so the message is not observed.
+
+<hr>
+
+In the following questions, utilize this base code by copying and pasting it into your code chunks, then adding material.
+```{r,error=TRUE}
+f = function(x) { 
+  sqrt(x)
+  print("foo")
+}
+```
+
+- 6) (5 points) In the code chunk below, first run the code as it is defined above with a character input. Confirm that an error is generated and that you don't see the word "foo". Then, below that function call, redefine the function <tt>f()</tt> so that it includes a call to <tt>try()</tt> at an appropriate place. Then call your updated function with a character input. Do you see the word "foo" now?
+
+- 7) (10 points) Alter your function in Q6, replacing the <tt>try()</tt> with <tt>tryCatch()</tt> (and deleting the <tt>print("foo")</tt>). Catch what you feel are the relevant conditions here, and deal with them appropriately (by informing the user what went wrong). (For instance...do you think <tt>sqrt()</tt> issues informative messages? Or not?) Call the function with a character, and call it again with a negative number.
+
+- 8) (10 points) Repeat Q7, but add a <tt>finally</tt> argument to <tt>tryCatch()</tt> that prints (or more elegantly, if you want, cats) the value of $x$. Repeat the testing calls made in Q7. 
+
+- 9) (20 points) Someone on your code development team has come to you and said that he has a great idea for determining whether two words are alike: convert the letters of the words to integer vectors (with "a" mapping to 1, "B" to 2, etc.), and use the statistic computed when carrying out the Wilcoxon rank sum test as a metric of similarity. (This is kinda wildly wrong, but let's go with it.) The coder then provided the function below and stated that it must go into the next release now, Now, NOW!
+```{r}
+word.similarity = function(word.1,word.2)
+{
+  word.1.integers = sapply(unlist(strsplit(word.1,"")),function(x){which(letters==x)})
+  word.2.integers = sapply(unlist(strsplit(word.2,"")),function(x){which(letters==x)})
+  suppressWarnings(wilcox.test(x=word.1.integers,y=word.2.integers)$statistic[[1]])
+}
+word.similarity("foo","bar")
+```
+(Yeah, he's a bit lazy.) As a dutiful member of the team, your first responsibility is to write a series of tests utilizing functions in the <tt>testthat</tt> that will determine whether or not this code is operating correctly. Below, write at least six different test function calls, some but not all of which should fail. (Don't use any one <tt>testthat</tt> function, like <tt>expect_equal()</tt>, more than twice.) They can include tests that you know will fail, based on some future expectation: for instance, you can test whether a certain input yields a <tt>NULL</tt> (that test would fail currently). (Or whether that same input yields an error.) Then, when you improve the code below in the next question, you can improve it in such a way that your now-known-to-fail test will pass the next time. (Note that if two words have no overlap in the numerical ranks of their letters, like "aaa" and "zzz", the statistic will be zero.)
+
+- 10) (10 points) Rewrite <tt>word.similarity()</tt> below in such a way that all your tests of Q9 pass. (And demonstrate that your tests pass!)
